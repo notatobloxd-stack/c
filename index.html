@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>地震・強震モニター</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b0f19">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- スタート画面 -->
+    <div id="start-screen">
+      <h1 style="color: white; margin-bottom: 20px;">地震モニターシステム</h1>
+      <button id="start-btn">位置情報を許可して起動</button>
+    </div>
+
+    <!-- ローディング画面 -->
+    <div id="loading-screen" class="hidden">
+      <div class="spinner"></div>
+      <p id="loading-text">サーバーに接続中...</p>
+    </div>
+
+    <!-- メイン画面 -->
+    <div id="main-screen" class="hidden">
+      
+      <!-- ヘルパーバー（位置情報 ＆ 現在時刻） -->
+      <div class="top-bar">
+        <span id="location-label">📍 位置情報取得中...</span>
+        <span id="live-clock" class="live-clock">--:--:--</span>
+      </div>
+
+      <!-- 上部パネル：予想震度 ＆ P/S波カウントダウン -->
+      <div class="dash-panel">
+        <div class="box expected-shindo-box">
+          <div class="label">予想震度</div>
+          <div id="expected-shindo" class="value">-</div>
+        </div>
+        <div class="timers-col">
+          <div class="timer-row">
+            <span class="t-label">P波到達まで</span>
+            <span id="p-countdown" class="t-val green">-- 秒</span>
+          </div>
+          <div class="timer-row">
+            <span class="t-label">S波到達まで</span>
+            <span id="s-countdown" class="t-val red">-- 秒</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 緊急地震速報 詳細パネル -->
+      <div id="eew-banner" class="eew-banner hidden">
+        <div class="eew-header">
+          <span class="eew-title">🚨 緊急地震速報（警報）</span>
+          <span id="eew-serial" class="eew-serial">第1報</span>
+        </div>
+        <div class="eew-body">
+          <div id="eew-hypo" class="eew-hypo">---</div>
+          <div class="eew-sub">
+            <span id="eew-time">--:--:-- 発生</span> / 
+            M<span id="eew-mag">-.-</span> / 
+            深さ:<span id="eew-depth">--</span>km
+          </div>
+        </div>
+      </div>
+
+      <!-- マップエリア -->
+      <div id="map"></div>
+
+      <!-- マップ凡例 -->
+      <div id="map-legend" class="hidden">
+        <span class="legend-item"><span class="p-line"></span> P波</span>
+        <span class="legend-item"><span class="s-area"></span> S波</span>
+      </div>
+
+      <!-- 受信履歴セクション -->
+      <div class="history-section">
+        <h3>📋 受信履歴</h3>
+        <div id="history-list" class="history-list">
+          <div class="history-empty">履歴はありません</div>
+        </div>
+      </div>
+
+      <!-- フッター (ステータス) -->
+      <div class="footer-status">
+        <span>接続状態: <span id="status-text">🔴 切断</span></span>
+        <span>距離: <span id="distance-val">-</span> km</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch((err) => {
+          console.log('Service Worker 登録失敗:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
